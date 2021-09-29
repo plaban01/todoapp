@@ -1,0 +1,32 @@
+version: "3.3"
+services: 
+  mongodb:
+    image: mongo
+    volumes:
+      - todoapp_db:/data/db
+    
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on: 
+      - mongodb
+
+  frontend:
+    build: ./frontend
+    volumes:
+      - ./frontend/dist/frontend:/app/dist/frontend
+    depends_on: 
+      - backend
+
+  apache:
+    build: ./apache
+    volumes:
+      - ./frontend/dist/frontend:/usr/local/apache2/htdocs/
+    ports: 
+      - 80:80
+    depends_on:
+      - frontend
+
+volumes:
+  todoapp_db: {}
